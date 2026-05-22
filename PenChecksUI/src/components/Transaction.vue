@@ -28,7 +28,7 @@
               :min="0"
               :precision="2"
             ></v-number-input>
-            <v-btn type="submit" color="primary">Submit Deposit</v-btn>
+            <v-btn type="submit" color="primary" block>Deposit</v-btn>
           </v-form>
         </v-sheet>
       </v-tabs-window-item>
@@ -51,9 +51,8 @@
               required
               :min="0"
               :precision="2"
-              hide-details="auto"
             ></v-number-input>
-            <v-btn type="submit" color="primary">Submit Withdrawal</v-btn>
+            <v-btn type="submit" color="primary" block>Withdraw</v-btn>
           </v-form>
         </v-sheet>
       </v-tabs-window-item>
@@ -83,7 +82,7 @@
               :min="0"
               :precision="2"
             ></v-number-input>
-            <v-btn type="submit" color="primary">Submit Transfer</v-btn>
+            <v-btn type="submit" color="primary" block>Transfer</v-btn>
           </v-form>
         </v-sheet>
       </v-tabs-window-item>
