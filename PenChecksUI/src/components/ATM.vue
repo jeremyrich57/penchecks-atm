@@ -3,7 +3,7 @@
     <h1>PenChecks ATM</h1>
     <div>Deposit, withdraw, and transfer funds</div>
     <Accounts />
-    <div class="d-flex flex-wrap">
+    <div class="d-flex flex-wrap ga-5 mt-4">
       <Transaction class="flex-fill" style="min-width: 250px" />
       <History class="flex-fill" style="min-width: 250px" />
     </div>
