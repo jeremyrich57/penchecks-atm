@@ -4,6 +4,7 @@ import "vuetify/styles";
 import { createVuetify } from "vuetify";
 import * as components from "vuetify/components";
 import * as directives from "vuetify/directives";
+import { aliases, mdi } from "vuetify/iconsets/mdi-svg";
 import App from "./App.vue";
 
 import "@fontsource/roboto/100.css";
@@ -24,6 +25,11 @@ import "@fontsource/roboto/900-italic.css";
 const vuetify = createVuetify({
   components,
   directives,
+  icons: {
+    defaultSet: "mdi",
+    aliases,
+    sets: { mdi },
+  },
 });
 
 createApp(App).use(vuetify).mount("#app");

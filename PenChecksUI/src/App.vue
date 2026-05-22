@@ -1,7 +1,7 @@
 <script setup>
-import HelloWorld from './components/HelloWorld.vue'
+import ATM from "./components/ATM.vue";
 </script>
 
 <template>
-  <HelloWorld />
+  <ATM />
 </template>
