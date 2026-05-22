@@ -1,6 +1,48 @@
 @PenChecksAPI_HostAddress = http://localhost:5144
 
-GET {{PenChecksAPI_HostAddress}}/weatherforecast/
-Accept: application/json
+GET {{PenChecksAPI_HostAddress}}/api/customer
+
+###
+
+GET {{PenChecksAPI_HostAddress}}/api/accounts
+
+###
+
+GET {{PenChecksAPI_HostAddress}}/api/accounts/11111111-1111-1111-1111-111111111111
+
+###
+
+POST {{PenChecksAPI_HostAddress}}/api/accounts/{id:guid}/deposit
+Content-Type: application/json
+
+{
+  //Guid
+}
+
+###
+
+POST {{PenChecksAPI_HostAddress}}/api/accounts/{id:guid}/withdraw
+Content-Type: application/json
+
+{
+  //Guid
+}
+
+###
+
+GET {{PenChecksAPI_HostAddress}}/api/accounts
+
+###
+
+GET {{PenChecksAPI_HostAddress}}/api/transactions
+
+###
+
+POST {{PenChecksAPI_HostAddress}}/api/transfers
+Content-Type: application/json
+
+{
+  //TransferRequest
+}
 
 ###
