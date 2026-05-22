@@ -4,6 +4,12 @@ export type Account = {
   balance: number;
 };
 
+export type Customer = {
+  id: string;
+  name: string;
+  accounts: Account[];
+};
+
 export type TransactionType = "deposit" | "withdraw" | "transfer";
 
 export type Transaction = {
@@ -12,8 +18,12 @@ export type Transaction = {
   amount: number;
   accountId: string;
   accountName: string;
-  toAccountId?: string;
-  toAccountName?: string;
-  timestamp: number;
-  balanceAfter: number;
+  toAccountId?: string | null;
+  toAccountName?: string | null;
+  timestamp: string;
+};
+
+export type TransferResponse = {
+  from: Account;
+  to: Account;
 };
