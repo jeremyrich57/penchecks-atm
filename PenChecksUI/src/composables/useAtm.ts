@@ -30,13 +30,23 @@ async function refresh() {
 }
 
 async function deposit(accountId: string, amount: number) {
-  await accountsApi.deposit(accountId, amount);
-  await refresh();
+  error.value = null;
+  try {
+    await accountsApi.deposit(accountId, amount);
+    await refresh();
+  } catch (e) {
+    error.value = (e as Error).message;
+  }
 }
 
 async function withdraw(accountId: string, amount: number) {
-  await accountsApi.withdraw(accountId, amount);
-  await refresh();
+  error.value = null;
+  try {
+    await accountsApi.withdraw(accountId, amount);
+    await refresh();
+  } catch (e) {
+    error.value = (e as Error).message;
+  }
 }
 
 async function transfer(
@@ -44,8 +54,13 @@ async function transfer(
   toAccountId: string,
   amount: number
 ) {
-  await transfersApi.transfer(fromAccountId, toAccountId, amount);
-  await refresh();
+  error.value = null;
+  try {
+    await transfersApi.transfer(fromAccountId, toAccountId, amount);
+    await refresh();
+  } catch (e) {
+    error.value = (e as Error).message;
+  }
 }
 
 export function useAtm() {
