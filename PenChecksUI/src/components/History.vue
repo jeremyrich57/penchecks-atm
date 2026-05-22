@@ -12,24 +12,19 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(tx, index) in transactions" :key="index">
-          <td>{{ tx.date }}</td>
-          <td>{{ tx.type }}</td>
-          <td>{{ tx.fromAccount || "-" }}</td>
-          <td>{{ tx.toAccount || "-" }}</td>
-          <td
-            v-if="tx.type === 'Deposit'"
-            class="text-success text-title-medium"
-          >
-            +${{ tx.amount.toFixed(2) }}
+        <tr v-if="transactions.length === 0">
+          <td colspan="5" class="text-center text-medium-emphasis">
+            No transactions yet
           </td>
-          <td
-            v-else-if="tx.type === 'Withdrawal'"
-            class="text-error text-title-medium"
-          >
-            -${{ tx.amount.toFixed(2) }}
+        </tr>
+        <tr v-for="tx in transactions" :key="tx.id">
+          <td>{{ formatDate(tx.timestamp) }}</td>
+          <td>{{ typeLabel(tx.type) }}</td>
+          <td>{{ fromAccountLabel(tx) }}</td>
+          <td>{{ toAccountLabel(tx) }}</td>
+          <td :class="amountClass(tx.type)">
+            {{ amountPrefix(tx.type) }}${{ tx.amount.toFixed(2) }}
           </td>
-          <td v-else class="text-title-medium">-${{ tx.amount.toFixed(2) }}</td>
         </tr>
       </tbody>
     </v-table>
@@ -37,32 +32,46 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { useAtm } from "../composables/useAtm";
+import type { Transaction, TransactionType } from "../types";
 
-// TODO: Replace with real transaction data from backend
-const transactions = ref([
-  {
-    date: "2024-06-01",
-    type: "Deposit",
-    fromAccount: "",
-    toAccount: "Checking",
-    amount: 500,
-  },
-  {
-    date: "2024-06-02",
-    type: "Withdrawal",
-    fromAccount: "Checking",
-    toAccount: "",
-    amount: 100,
-  },
-  {
-    date: "2024-06-03",
-    type: "Transfer",
-    fromAccount: "Checking",
-    toAccount: "Savings",
-    amount: 200,
-  },
-]);
+const { transactions } = useAtm();
+
+function formatDate(iso: string) {
+  return new Date(iso).toLocaleString();
+}
+
+function typeLabel(type: TransactionType) {
+  switch (type) {
+    case "deposit":
+      return "Deposit";
+    case "withdraw":
+      return "Withdrawal";
+    case "transfer":
+      return "Transfer";
+  }
+}
+
+function fromAccountLabel(tx: Transaction) {
+  if (tx.type === "deposit") return "-";
+  return tx.accountName || "-";
+}
+
+function toAccountLabel(tx: Transaction) {
+  if (tx.type === "deposit") return tx.accountName || "-";
+  if (tx.type === "transfer") return tx.toAccountName || "-";
+  return "-";
+}
+
+function amountPrefix(type: TransactionType) {
+  return type === "deposit" ? "+" : "-";
+}
+
+function amountClass(type: TransactionType) {
+  if (type === "deposit") return "text-success text-title-medium";
+  if (type === "withdraw") return "text-error text-title-medium";
+  return "text-title-medium";
+}
 </script>
 
 <style scoped></style>
