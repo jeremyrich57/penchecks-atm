@@ -18,7 +18,9 @@
             <v-select
               v-model="depositToAccount"
               label="To Account"
-              :items="['Checking', 'Savings']"
+              :items="accountItems"
+              item-title="name"
+              item-value="id"
               required
             ></v-select>
             <v-number-input
@@ -28,7 +30,15 @@
               :min="0"
               :precision="2"
             ></v-number-input>
-            <v-btn type="submit" color="primary" block>Deposit</v-btn>
+            <v-btn
+              type="submit"
+              color="primary"
+              block
+              :loading="submitting"
+              :disabled="!depositToAccount || depositAmount <= 0"
+            >
+              Deposit
+            </v-btn>
           </v-form>
         </v-sheet>
       </v-tabs-window-item>
@@ -42,7 +52,9 @@
             <v-select
               v-model="withdrawFromAccount"
               label="From Account"
-              :items="['Checking', 'Savings']"
+              :items="accountItems"
+              item-title="name"
+              item-value="id"
               required
             ></v-select>
             <v-number-input
@@ -52,7 +64,15 @@
               :min="0"
               :precision="2"
             ></v-number-input>
-            <v-btn type="submit" color="primary" block>Withdraw</v-btn>
+            <v-btn
+              type="submit"
+              color="primary"
+              block
+              :loading="submitting"
+              :disabled="!withdrawFromAccount || withdrawAmount <= 0"
+            >
+              Withdraw
+            </v-btn>
           </v-form>
         </v-sheet>
       </v-tabs-window-item>
@@ -66,13 +86,17 @@
             <v-select
               v-model="transferFromAccount"
               label="From Account"
-              :items="['Checking', 'Savings']"
+              :items="accountItems"
+              item-title="name"
+              item-value="id"
               required
             ></v-select>
             <v-select
               v-model="transferToAccount"
               label="To Account"
-              :items="['Checking', 'Savings']"
+              :items="accountItems"
+              item-title="name"
+              item-value="id"
               required
             ></v-select>
             <v-number-input
@@ -82,7 +106,20 @@
               :min="0"
               :precision="2"
             ></v-number-input>
-            <v-btn type="submit" color="primary" block>Transfer</v-btn>
+            <v-btn
+              type="submit"
+              color="primary"
+              block
+              :loading="submitting"
+              :disabled="
+                !transferFromAccount ||
+                !transferToAccount ||
+                transferFromAccount === transferToAccount ||
+                transferAmount <= 0
+              "
+            >
+              Transfer
+            </v-btn>
           </v-form>
         </v-sheet>
       </v-tabs-window-item>
@@ -91,31 +128,75 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { computed, ref, watch } from "vue";
+import { useAtm } from "../composables/useAtm";
+
+const { accounts, deposit, withdraw, transfer } = useAtm();
+
+const accountItems = computed(() =>
+  accounts.value.map((a) => ({ id: a.id, name: a.name }))
+);
 
 const tab = ref("deposit");
-const depositToAccount = ref("Checking");
+const submitting = ref(false);
+
+const depositToAccount = ref<string | null>(null);
 const depositAmount = ref(0);
-const withdrawFromAccount = ref("Checking");
+const withdrawFromAccount = ref<string | null>(null);
 const withdrawAmount = ref(0);
-const transferFromAccount = ref("Checking");
-const transferToAccount = ref("Savings");
+const transferFromAccount = ref<string | null>(null);
+const transferToAccount = ref<string | null>(null);
 const transferAmount = ref(0);
 
-const submitDeposit = () => {
-  // Handle deposit submission logic here
-  alert("Deposit submitted!");
-};
+// pick sensible defaults once accounts load
+watch(
+  accounts,
+  (list) => {
+    if (list.length === 0) return;
+    depositToAccount.value ??= list[0].id;
+    withdrawFromAccount.value ??= list[0].id;
+    transferFromAccount.value ??= list[0].id;
+    transferToAccount.value ??= list[1]?.id ?? list[0].id;
+  },
+  { immediate: true }
+);
 
-const submitWithdraw = () => {
-  // Handle withdrawal submission logic here
-  alert("Withdrawal submitted!");
-};
+async function submitDeposit() {
+  if (!depositToAccount.value) return;
+  submitting.value = true;
+  try {
+    await deposit(depositToAccount.value, depositAmount.value);
+    depositAmount.value = 0;
+  } finally {
+    submitting.value = false;
+  }
+}
 
-const submitTransfer = () => {
-  // Handle transfer submission logic here
-  alert("Transfer submitted!");
-};
+async function submitWithdraw() {
+  if (!withdrawFromAccount.value) return;
+  submitting.value = true;
+  try {
+    await withdraw(withdrawFromAccount.value, withdrawAmount.value);
+    withdrawAmount.value = 0;
+  } finally {
+    submitting.value = false;
+  }
+}
+
+async function submitTransfer() {
+  if (!transferFromAccount.value || !transferToAccount.value) return;
+  submitting.value = true;
+  try {
+    await transfer(
+      transferFromAccount.value,
+      transferToAccount.value,
+      transferAmount.value
+    );
+    transferAmount.value = 0;
+  } finally {
+    submitting.value = false;
+  }
+}
 </script>
 
 <style scoped></style>
